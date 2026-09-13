@@ -1,7 +1,6 @@
 services:
   wallet-to-actualbudget:
-    build: .
-    # Or, once published: image: ghcr.io/<you>/wallet-to-actualbudget:latest
+    image: ghcr.io/zhria/wallet-to-actualbudget:latest
     restart: unless-stopped
     env_file: .env
     volumes:

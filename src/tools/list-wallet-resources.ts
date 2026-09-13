@@ -1,11 +1,11 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import "dotenv/config";
-import { WalletClient } from "../src/wallet/client.js";
-import type { WalletAccount, WalletCategory } from "../src/wallet/types.js";
+import { WalletClient } from "../wallet/client.js";
+import type { WalletAccount, WalletCategory } from "../wallet/types.js";
 
 /**
  * Extracts every Wallet account and category (with their IDs) and writes
- * them to tools/output/wallet-resources.json, for building config/mapping.json.
+ * them to src/tools/output/wallet-resources.json, for building config/mapping.json.
  */
 const OUTPUT_PATH = new URL("./output/wallet-resources.json", import.meta.url);
 

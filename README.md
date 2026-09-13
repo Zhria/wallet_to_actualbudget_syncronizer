@@ -28,9 +28,9 @@ linked Actual transfers.
 2. **Get your Actual Budget sync ID.** In Actual: Settings → Show advanced settings → Sync ID. You'll also need your
    server password, and your end-to-end encryption password if the budget is encrypted.
 3. Copy `.env.example` to `.env` and fill in the values.
-4. Copy `config/mapping.example.json` to `config/mapping.json`. Use the scripts in [`tools/`](tools/README.md) to
-   find (and, if needed, create) the account/category IDs on each side, then fill in the mapping pairs you want
-   synced.
+4. Copy `config/mapping.example.json` to `config/mapping.json`. Use the scripts in
+   [`src/tools/`](src/tools/README.md) to find (and, if needed, create) the account/category IDs on each side, then
+   fill in the mapping pairs you want synced.
 
 ## Running
 
@@ -46,21 +46,48 @@ npm run schedule
 
 ### Docker
 
+`docker-compose.example.yml` always pulls the published image from `ghcr.io` — it never builds locally. That means
+a versioned image needs to exist first: see [Releasing a versioned image](#releasing-a-versioned-image) below if
+you haven't pushed a release tag yet.
+
 ```bash
 cp docker-compose.example.yml docker-compose.yml
-docker compose up -d --build
+docker compose up -d
 ```
 
 The container runs `npm run schedule` internally, so it stays up and syncs on the configured cron expression.
 Mount your filled-in `config/mapping.json` and a persistent volume for `actual-data` (Actual's local cache), as
-shown in `docker-compose.example.yml`.
+shown in `docker-compose.example.yml`. To pick up a newer release later: `docker compose pull && docker compose up -d`.
+
+### Releasing a versioned image
+
+Pushing a build to `ghcr.io` is fully automated by [`.github/workflows/docker-publish.yml`](.github/workflows/docker-publish.yml),
+triggered only by a version tag — nothing runs on ordinary pushes:
+
+```bash
+# 1. Bump the version in package.json, commit it
+npm version 0.2.0 --no-git-tag-version
+git add package.json package-lock.json
+git commit -m "Release 0.2.0"
+
+# 2. Tag it (must be "v" + the exact package.json version) and push both
+git tag v0.2.0
+git push origin master v0.2.0
+```
+
+CI then type-checks, builds, and pushes `ghcr.io/zhria/wallet-to-actualbudget:0.2.0` and `:latest`. It fails the
+build if the tag doesn't match `package.json`'s version, so the two can't drift apart.
+
+One-time setup on GitHub: under Settings → Actions → General → Workflow permissions, make sure "Read and write
+permissions" is selected — otherwise the built-in `GITHUB_TOKEN` can't push to the container registry.
 
 ## Tools
 
-[`tools/`](tools/README.md) holds one-off scripts for setting up `config/mapping.json` — listing Wallet/Actual
-accounts and categories with their IDs, and creating Actual accounts/categories when a Wallet counterpart doesn't
-exist yet. Separate from the `src/` app code; none of it is built into the Docker image. See
-[tools/README.md](tools/README.md) for the full list and usage.
+[`src/tools/`](src/tools/README.md) holds one-off scripts for setting up `config/mapping.json` — listing
+Wallet/Actual accounts and categories with their IDs, and creating Actual accounts/categories when a Wallet
+counterpart doesn't exist yet. They're not part of the sync/scheduler flow, but they do compile into the Docker
+image (`dist/tools/`), so they're also runnable from inside a running container. See
+[src/tools/README.md](src/tools/README.md) for the full list and usage.
 
 ## Configuration reference
 

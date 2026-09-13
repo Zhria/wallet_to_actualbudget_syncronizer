@@ -1,0 +1,12 @@
+node_modules
+dist
+.git
+.env
+.env.example
+actual-data
+config/mapping.json
+src/tools/output
+*.log
+docker-compose.yml
+docker-compose.example.yml
+README.md

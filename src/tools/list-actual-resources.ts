@@ -4,7 +4,7 @@ import * as api from "@actual-app/api";
 
 /**
  * Extracts every Actual account and category (with their IDs) and writes
- * them to tools/output/actual-resources.json, for building config/mapping.json.
+ * them to src/tools/output/actual-resources.json, for building config/mapping.json.
  */
 const OUTPUT_PATH = new URL("./output/actual-resources.json", import.meta.url);
 

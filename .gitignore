@@ -3,5 +3,5 @@ dist/
 .env
 config/mapping.json
 actual-data/
-tools/output/
+src/tools/output/
 *.log

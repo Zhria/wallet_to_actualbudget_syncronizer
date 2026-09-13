@@ -10,12 +10,13 @@
   "scripts": {
     "sync": "tsx src/cli.ts",
     "schedule": "tsx src/scheduler.ts",
-    "wallet:list": "tsx tools/list-wallet-resources.ts",
-    "actual:list": "tsx tools/list-actual-resources.ts",
-    "actual:create-account": "tsx tools/create-actual-account.ts",
-    "actual:create-category": "tsx tools/create-actual-category.ts",
+    "wallet:list": "tsx src/tools/list-wallet-resources.ts",
+    "actual:list": "tsx src/tools/list-actual-resources.ts",
+    "actual:create-account": "tsx src/tools/create-actual-account.ts",
+    "actual:create-category": "tsx src/tools/create-actual-category.ts",
+    "actual:update-balance": "tsx src/tools/update-actual-balance.ts",
     "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tools/tsconfig.json",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint src"
   },
   "dependencies": {
