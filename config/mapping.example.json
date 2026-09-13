@@ -1,0 +1,15 @@
+{
+  "accounts": [
+    {
+      "walletAccountId": "wallet-account-id-1",
+      "actualAccountId": "actual-account-id-1"
+    }
+  ],
+  "categories": [
+    {
+      "walletCategoryId": "wallet-category-id-1",
+      "actualCategoryId": "actual-category-id-1"
+    }
+  ],
+  "uncategorizedActualCategoryId": null
+}

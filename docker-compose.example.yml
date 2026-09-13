@@ -1,0 +1,12 @@
+services:
+  wallet-to-actualbudget:
+    build: .
+    # Or, once published: image: ghcr.io/<you>/wallet-to-actualbudget:latest
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./config/mapping.json:/app/config/mapping.json:ro
+      - actual-data:/app/actual-data
+
+volumes:
+  actual-data:
