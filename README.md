@@ -28,9 +28,9 @@ linked Actual transfers.
 2. **Get your Actual Budget sync ID.** In Actual: Settings → Show advanced settings → Sync ID. You'll also need your
    server password, and your end-to-end encryption password if the budget is encrypted.
 3. Copy `.env.example` to `.env` and fill in the values.
-4. Copy `config/mapping.example.json` to `config/mapping.json`. Run `npm run wallet:list` and `npm run actual:list`
-   (see [Extracting account/category IDs](#extracting-accountcategory-ids) below) to find the IDs, then fill in the
-   mapping pairs you want synced.
+4. Copy `config/mapping.example.json` to `config/mapping.json`. Use the scripts in [`tools/`](tools/README.md) to
+   find (and, if needed, create) the account/category IDs on each side, then fill in the mapping pairs you want
+   synced.
 
 ## Running
 
@@ -55,19 +55,12 @@ The container runs `npm run schedule` internally, so it stays up and syncs on th
 Mount your filled-in `config/mapping.json` and a persistent volume for `actual-data` (Actual's local cache), as
 shown in `docker-compose.example.yml`.
 
-## Extracting account/category IDs
+## Tools
 
-`tools/` holds one-off scripts for pulling IDs out of each side, separate from the `src/` app code (they aren't
-built into the Docker image):
-
-```bash
-npm run wallet:list   # -> tools/output/wallet-resources.json
-npm run actual:list   # -> tools/output/actual-resources.json
-```
-
-Each prints a human-readable list to the console and writes the full account/category objects (id, name, and
-other fields) to a JSON file under `tools/output/` (gitignored — it can contain your real account/category names).
-Use the console output to grab IDs by hand, or read the JSON files to script the mapping generation yourself.
+[`tools/`](tools/README.md) holds one-off scripts for setting up `config/mapping.json` — listing Wallet/Actual
+accounts and categories with their IDs, and creating Actual accounts/categories when a Wallet counterpart doesn't
+exist yet. Separate from the `src/` app code; none of it is built into the Docker image. See
+[tools/README.md](tools/README.md) for the full list and usage.
 
 ## Configuration reference
 
@@ -78,6 +71,13 @@ See `.env.example` for all environment variables. Key ones:
 | `WALLET_API_TOKEN` | Wallet personal API token |
 | `ACTUAL_SERVER_URL`, `ACTUAL_SERVER_PASSWORD`, `ACTUAL_SYNC_ID` | Actual Budget server connection |
 | `ACTUAL_ENCRYPTION_PASSWORD` | Only needed for end-to-end encrypted budgets |
+| `ACTUAL_DATA_DIR` | Local cache directory for Actual's SDK (default `./actual-data`) — see below |
 | `MAPPING_FILE` | Path to the account/category mapping JSON (default `./config/mapping.json`) |
 | `SYNC_LOOKBACK_DAYS` | How many days back to re-pull each run (default 30) |
 | `SYNC_CRON` | Cron expression used by `npm run schedule` (default hourly) |
+
+`ACTUAL_DATA_DIR` isn't something you fill in — `@actual-app/api` manages it. On first connect it downloads your
+whole budget into a local SQLite file there, and every run after that just syncs the delta. Keeping this directory
+around means each sync stays fast (incremental); wiping it just forces the next run to redownload the full budget,
+it's not otherwise dangerous. It's created automatically if missing, gitignored, and — in Docker — backed by the
+`actual-data` named volume so it survives container restarts and rebuilds.
