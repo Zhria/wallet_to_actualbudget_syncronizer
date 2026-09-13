@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+config/mapping.json
+actual-data/
+tools/output/
+*.log

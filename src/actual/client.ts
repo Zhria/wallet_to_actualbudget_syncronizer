@@ -1,9 +1,12 @@
+import { mkdirSync } from "node:fs";
 import * as api from "@actual-app/api";
 import type { Config } from "../config.js";
 
 export type ActualTransaction = Omit<Parameters<typeof api.importTransactions>[1][number], "account">;
 
 export async function connectToActual(config: Config): Promise<void> {
+  mkdirSync(config.actualDataDir, { recursive: true });
+
   await api.init({
     dataDir: config.actualDataDir,
     serverURL: config.actualServerUrl,

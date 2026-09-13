@@ -28,9 +28,9 @@ linked Actual transfers.
 2. **Get your Actual Budget sync ID.** In Actual: Settings → Show advanced settings → Sync ID. You'll also need your
    server password, and your end-to-end encryption password if the budget is encrypted.
 3. Copy `.env.example` to `.env` and fill in the values.
-4. Copy `config/mapping.example.json` to `config/mapping.json`. Run `npm run wallet:list` to print every Wallet
-   account/category ID, and use `npx tsx` with Actual's API (or the Actual UI) to find your Actual account/category
-   IDs, then fill in the mapping pairs you want synced.
+4. Copy `config/mapping.example.json` to `config/mapping.json`. Run `npm run wallet:list` and `npm run actual:list`
+   (see [Extracting account/category IDs](#extracting-accountcategory-ids) below) to find the IDs, then fill in the
+   mapping pairs you want synced.
 
 ## Running
 
@@ -54,6 +54,20 @@ docker compose up -d --build
 The container runs `npm run schedule` internally, so it stays up and syncs on the configured cron expression.
 Mount your filled-in `config/mapping.json` and a persistent volume for `actual-data` (Actual's local cache), as
 shown in `docker-compose.example.yml`.
+
+## Extracting account/category IDs
+
+`tools/` holds one-off scripts for pulling IDs out of each side, separate from the `src/` app code (they aren't
+built into the Docker image):
+
+```bash
+npm run wallet:list   # -> tools/output/wallet-resources.json
+npm run actual:list   # -> tools/output/actual-resources.json
+```
+
+Each prints a human-readable list to the console and writes the full account/category objects (id, name, and
+other fields) to a JSON file under `tools/output/` (gitignored — it can contain your real account/category names).
+Use the console output to grab IDs by hand, or read the JSON files to script the mapping generation yourself.
 
 ## Configuration reference
 
